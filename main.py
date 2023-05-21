@@ -3,33 +3,32 @@ import cv2
 import numpy as np
 import mediapipe as mp
 from collections import deque
+import torch
 
 
-# Giving different arrays to handle colour points of different colour
+# initialize classifier
+
+
+
+# points, emoji & emoji location array
 points = [deque(maxlen=1024)]
+emoji = []
+emoji_loca = []
 
-
-# These indexes will be used to mark the points in particular arrays of specific colour
+# index indicating deque in points, colors for lines
 index = 0
-
-#The kernel to be used for dilation purpose 
-kernel = np.ones((5,5),np.uint8)
-
 colors = (0, 0, 0)
 
 # Here is code for Canvas setup
 paintWindow = np.zeros((720,1280,3)) + 255
 paintWindow = cv2.rectangle(paintWindow, (40,1), (140,65), (0,0,0), 2)
-
 cv2.putText(paintWindow, "CLEAR", (49, 33), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2, cv2.LINE_AA)
 cv2.namedWindow('Paint', cv2.WINDOW_AUTOSIZE)
-
 
 # initialize mediapipe
 mpHands = mp.solutions.hands
 hands = mpHands.Hands(max_num_hands=1, min_detection_confidence=0.7)
 mpDraw = mp.solutions.drawing_utils
-
 
 # Initialize the webcam
 cap = cv2.VideoCapture(0)
@@ -95,6 +94,20 @@ while ret:
 
     cv2.imshow("Output", frame) 
     cv2.imshow("Paint", paintWindow)
+
+
+    # Classificate drawing
+    '''
+        paintedWindow : (h * w) numpy array.
+    '''
+
+    # Crop paintedWindow to square.
+    image = paintWindow[:, int(x/2 - y/2):int(x/2 + y/2)]
+
+    # Put image to Classification.
+
+
+
 
     if cv2.waitKey(1) == ord('q'):
         break
