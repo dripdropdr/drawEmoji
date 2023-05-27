@@ -1,17 +1,54 @@
 # drawEmoji
-Simple Opencv & Classificaiton Project.
-Draw sth in webcam and change drawing to emoji.
+This program supports drawing sth in webcam and change the drawing to emoji.
 
-# Demo
 
 ## 1. Overview
+- Webcam drawing
+- doodle recognition
+- Image on frame
+
+## 2. Method
+
+In Webcam Drawing, I referred the Air-Canvas-Projects (Link is ___.)
+After perceiving the position of index finger, stacked it and visualize on each frame.
+
+The program shows 2 windown, pained window and webcam window. If user draw sth, the virtual drawing is shown on painted window, too.
+I exploited this input objects of classifier after cropping and resizing.
+
+Drawing classifier is ResNet18. I tunned this network with CrossEntrophy loss, Adamw optimizer, CosineAnnealing scheduler, and some data transform on 22epochs. 
+The detailed information of this is in model.py
+
+I trained the classifier using quick-draw dataset. 
+Quick-Draw dataset is offered by Google, composed to 384 drawing classes.
+Only 45 classes of this dataset is used for drawEmoji. You can see exploited classes and their number in dataset.py label2id.
+
+In programm running, I got prediction result from the classifier and call corresponding emoji image with random position.
+I collected the matched emoji image with drawing from emojipedia.
+Finally, the program put these emojis on frame and visualize it.
+
 
 **Steps**
-1. virtual drawing
-2. get virtual drawing objects
-3. drawing objects classification
-4. matched emoji on webcam
+1. Set painted window and webcam both.
+2. Hand Tracking to get point of index finger.
+3. Stack points and draw them on iterative webcam frame.
+4. If user directs clear button, all stacked points and drawing are cleared.
+5. If user directs emoji button, we can get virtual drawing objects from the painted window. It is processed and inputted to classifier.
+6. When classifier omitted the output class, corresponding emoji is shown on frame with random position.
+7. If user directs emoji clear button, all emoji is disappeared.
 
-## 2. Demo
 
-## 3. Method
+## 3. Installation
+'''
+$ conda create -n emoji python=3.7
+$ pip install -r requirements.txt
+'''
+
+Download this trained weights, and put this file at output/emoji
+https://drive.google.com/file/d/1Xwkc76gcH05-ojBetPWYWcdOhtITtf2_/view?usp=sharing
+
+
+
+## 4. Reference
+https://github.com/infoaryan/Air-Canvas-project/tree/master
+https://github.com/googlecreativelab/quickdraw-dataset/tree/master
+https://emojipedia.org/
