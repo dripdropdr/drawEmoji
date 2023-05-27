@@ -1,0 +1,5 @@
+wandb/
+dataset/
+train_simplified/
+.DS_Store
+.vscode/
