@@ -14,8 +14,9 @@ def arg():
 
     parser.add_argument('--lr', default=0.001, type=int)
     parser.add_argument('--epochs', default=50, type=int)
-    parser.add_argument('--batch_size', default=32)
-    parser.add_argument('--save_interval', default=5)
+    parser.add_argument('--start_epoch', default=4, type=int)
+    parser.add_argument('--batch_size', default=256)
+    parser.add_argument('--save_interval', default=1)
 
     parser.add_argument('--data', default='dataset')
     parser.add_argument('--output', default='output/emoji')
@@ -29,7 +30,9 @@ def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
     model = models.resnet18(pretrained=True)
     model.conv1 = nn.Conv2d(1, 64, 7, 2, 3)
-    model.fc = nn.Linear(model.fc.in_features, 90)
+    model.fc = nn.Linear(model.fc.in_features, 45)
+    checkpoint = torch.load('output/emoji/checkpoint0003.pth')
+    model.load_state_dict(checkpoint)
     model.to(device)
 
     criterion = torch.nn.CrossEntropyLoss()
@@ -47,14 +50,13 @@ def main(args):
         ]),
         'val': transforms.Compose([
             transforms.Resize(input_size),
-            transforms.CenterCrop(224),
             transforms.ToTensor(),
             # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
     }
 
-    dataset_train = CustomImageDataset(os.path.join(args.data, 'train/images'), os.path.join(args.data, 'train/train.csv'), data_transforms['train'])
-    dataset_val = CustomImageDataset(os.path.join(args.data, 'val/images'), os.path.join(args.data, 'val/test.csv'), data_transforms['val'])
+    dataset_train = CustomImageDataset(os.path.join(args.data, 'train/images'), os.path.join(args.data, 'train/train45.csv'), data_transforms['train'])
+    dataset_val = CustomImageDataset(os.path.join(args.data, 'val/images'), os.path.join(args.data, 'val/test45.csv'), data_transforms['val'])
 
     dataloader_train = torch.utils.data.DataLoader(dataset_train, batch_size=args.batch_size, shuffle=True, num_workers=4)
     dataloader_val = torch.utils.data.DataLoader(dataset_val, batch_size=args.batch_size, shuffle=True, num_workers=4)
@@ -65,14 +67,17 @@ def main(args):
     wandb.init(project='drawemoji', name=f'experiments_{now}', config = config)
 
     # train
-    for epoch in range(args.epochs):
+    for epoch in range(args.start_epoch, args.epochs):
 
         train_one_epoch(model, criterion, optimizer, dataloader_train, device, epoch)
         lr_schedluer.step()
-        evaluate(model, criterion, optimizer, dataloader_val, device, epoch)
-
+    
         if (epoch % args.save_interval == 0):
+            if not os.path.exists(args.output):
+                os.makedirs(args.output)
             torch.save(model.state_dict(), f'{args.output}/chekcpoint{epoch:04}.pth')
+        
+        evaluate(model, criterion, optimizer, dataloader_val, device, epoch)
 
 
 def train_one_epoch(model, criterion, optimizer, dataloader_train, device, epoch):
@@ -104,8 +109,8 @@ def train_one_epoch(model, criterion, optimizer, dataloader_train, device, epoch
         
 def evaluate(model, criterion, optimizer, dataloader_val, device, epoch):
     model.eval()
-    running_loss = 0
-    running_acc = 0
+    epoch_loss = 0
+    epoch_acc = 0
     for sample, target in tqdm(dataloader_val, desc=f'Epoch[{epoch}]:'):
 
         sample = sample.to(device)
@@ -114,10 +119,15 @@ def evaluate(model, criterion, optimizer, dataloader_val, device, epoch):
         output = model(sample)
         loss = criterion(output, target)
 
-        running_loss += loss.item() / sample.size(0)
-        running_acc += torch.sum(output == target) / sample.size(0)
+        running_loss = loss.item()
+        running_acc = (torch.argmax(output, axis=1) == torch.argmax(target, axis=1)).float().mean().item()
+        epoch_loss += running_loss
+        epoch_acc += running_acc
         wandb.log({'eval_loss':running_loss, 'eval_acc':running_acc, 'lr':optimizer.param_groups[0]['lr']})
-
+    
+    epoch_loss /= len(dataloader_val)
+    epoch_acc /= len(dataloader_val)
+    wandb.log({'epoch_eval_loss': epoch_loss, 'epoch_eval_acc' : epoch_acc})
 
 if __name__ == '__main__':
     parser = arg()
