@@ -2,7 +2,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import ast
 from PIL import Image , ImageDraw
-from sklearn.preprocessing import OneHotEncoder
+# from sklearn.preprocessing import OneHotEncoder
 import time
 import numpy as np
 import os
@@ -93,9 +93,19 @@ def preprocessing(data_dir) :
     labels.to_csv('./val/test.csv')
 
 
+def emoji_preproc():
+    dir = './emoji'
+    for fname in [f for f in os.listdir(dir) if f.endswith('.png')]:
+        img = Image.open(os.path.join(dir, fname))
+        img = img.resize((100, 100))
+        img.save(dir+'/'+fname.split('.')[0]+'.png')
+
+
+
 if __name__ == '__main__':
     dirname = './train_simplified'
     file_name = dirname+'/'+'angel.csv'
     # inspection(file_name)
     # visualize(file_name)
-    preprocessing(dirname)
+    # preprocessing(dirname)
+    emoji_preproc()
