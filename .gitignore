@@ -4,5 +4,4 @@ train_simplified/
 .DS_Store
 .vscode/
 __pycache__/
-emoji/
 output/
