@@ -1,6 +1,6 @@
 # drawEmoji
 This program supports drawing sth in webcam and change the drawing to emoji.
-
+The functions implemented by opencv, mediapipe, torch.
 
 ## 1. Overview
 - Webcam drawing
@@ -9,23 +9,23 @@ This program supports drawing sth in webcam and change the drawing to emoji.
 
 ## 2. Method
 
-In Webcam Drawing, I referred the Air-Canvas-Projects (Link is ___.)
+In Webcam Drawing, I referred the [Air-Canvas-Projects](https://github.com/infoaryan/Air-Canvas-project).    
 After perceiving the position of index finger, stacked it and visualize on each frame.
 
-The program shows 2 windown, pained window and webcam window. If user draw sth, the virtual drawing is shown on painted window, too.
-I exploited this input objects of classifier after cropping and resizing.
+The program shows 2 windown, pained window and webcam window. If user draw sth, the virtual drawing is shown on painted window, too.   
+I exploited this input objects of classifier after cropping and resizing.   
 
-Drawing classifier is ResNet18. I tunned this network with CrossEntrophy loss, Adamw optimizer, CosineAnnealing scheduler, and some data transform on 22epochs. 
-The detailed information of this is in model.py
+Drawing classifier is ResNet18. I tunned this network with CrossEntrophy loss, Adamw optimizer, CosineAnnealing scheduler, and some data transform on 22epochs. The detailed information of this is in model.py.  
 
-I trained the classifier using quick-draw dataset. 
-Quick-Draw dataset is offered by Google, composed to 384 drawing classes.
-Only 45 classes of this dataset is used for drawEmoji. You can see exploited classes and their number in dataset.py label2id.
+I trained the classifier using [quick-draw](https://github.com/googlecreativelab/quickdraw-dataset/tree/master) dataset. Quick-Draw dataset is offered by Google, composed to 384 drawing classes.   
+Only 45 classes and 3000 data point by class of this dataset is used for drawEmoji. You can see exploited classes and their number in dataset.py label2id.   
+The datasets is offered by csv. So I pre-processed this. The detail of eda is in eda.py.   
 
-In programm running, I got prediction result from the classifier and call corresponding emoji image with random position.
-I collected the matched emoji image with drawing from emojipedia.
-Finally, the program put these emojis on frame and visualize it.
+In programm running, I got prediction result from the classifier and call corresponding emoji image with random position.   
+I collected the matched emoji image with drawing from [emojipedia](https://emojipedia.org/).   
+Finally, the program put these emojis on frame and visualize it.   
 
+Under is overall steps:   
 
 **Steps**
 1. Set painted window and webcam both.
@@ -38,15 +38,18 @@ Finally, the program put these emojis on frame and visualize it.
 
 
 ## 3. Installation
-'''
+  ```
 $ conda create -n emoji python=3.7
 $ pip install -r requirements.txt
-'''
+  ```
 
-Download this trained weights, and put this file at output/emoji
-https://drive.google.com/file/d/1Xwkc76gcH05-ojBetPWYWcdOhtITtf2_/view?usp=sharing
+Download [this trained weights](https://drive.google.com/file/d/1Xwkc76gcH05-ojBetPWYWcdOhtITtf2_/view?usp=sharing), and put this file at output/emoji folder.
 
 
+```
+$ python main.py
+```
+Run the program
 
 ## 4. Reference
 https://github.com/infoaryan/Air-Canvas-project/tree/master
