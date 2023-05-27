@@ -3,6 +3,10 @@ This program supports drawing sth in webcam and change the drawing to emoji.
 The functions implemented by opencv, mediapipe, torch.
 
 ## 1. Overview
+<img width="1392" alt="스크린샷 2023-05-27 오후 4 10 45" src="https://github.com/dripdropdr/drawEmoji/assets/81093298/2b26451e-f073-4326-805f-682a6f4e7e7e">
+<img width="1392" alt="스크린샷 2023-05-27 오후 4 11 08" src="https://github.com/dripdropdr/drawEmoji/assets/81093298/9bca9aad-9849-4cb9-a705-7cc994c53441">
+<img width="1348" alt="스크린샷 2023-05-27 오후 4 15 28" src="https://github.com/dripdropdr/drawEmoji/assets/81093298/c7177131-2931-488f-9c0c-f36ae61e913f">
+
 - Webcam drawing
 - doodle recognition
 - Image on frame
@@ -51,7 +55,11 @@ $ python main.py
 ```
 Run the program
 
-## 4. Reference
+## 4. Limitations
+- Accuracy of classifier -> need more training
+- Emoji image background -> transperancy reflection
+   
+## 5. Reference
 https://github.com/infoaryan/Air-Canvas-project/tree/master
 https://github.com/googlecreativelab/quickdraw-dataset/tree/master
 https://emojipedia.org/
