@@ -1,5 +1,8 @@
 # drawEmoji
-drawing emoji and use it as effects.   
+Simple Opencv & Classificaiton Project.
+Draw sth in webcam and change drawing to emoji.
+
+# Demo
 
 ## 1. Overview
 
